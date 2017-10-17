@@ -3,6 +3,9 @@ import cv2
 from matplotlib import pyplot as plt
 import math
 
+'''
+directly use the ECC algo to find the homography
+'''
 def method1(im1,im2):
 	# Convert images to grayscale
 	im1_gray = cv2.cvtColor(im1,cv2.COLOR_BGR2GRAY)
@@ -12,7 +15,7 @@ def method1(im1,im2):
 	sz = im1.shape
  
 	# Define the motion model
-	warp_mode = cv2.MOTION_TRANSLATION
+	warp_mode = cv2.MOTION_HOMOGRAPHY
  
 	# Define 2x3 or 3x3 matrices and initialize the matrix to identity
 	if warp_mode == cv2.MOTION_HOMOGRAPHY :
@@ -66,6 +69,11 @@ def deskew(orig_image,skewed_image,M):
 
     plt.show()
 
+'''
+Compute surf features for both the template and the incoming image
+Calculate the nearest neighbours to find control points
+Estimate the transformation
+'''
 def method2(orig_image,skewed_image):
 	surf = cv2.xfeatures2d.SURF_create(400)
 	kp1, des1 = surf.detectAndCompute(orig_image, None)
@@ -92,7 +100,6 @@ def method2(orig_image,skewed_image):
 
 	    M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
 
-	    # see https://ch.mathworks.com/help/images/examples/find-image-rotation-and-scale-using-automated-feature-matching.html for details
 	    ss = M[0, 1]
 	    sc = M[0, 0]
 	    scaleRecovered = math.sqrt(ss * ss + sc * sc)
@@ -103,9 +110,20 @@ def method2(orig_image,skewed_image):
 	    print("Not  enough  matches are found   -   %d/%d" % (len(good), MIN_MATCH_COUNT))
 	    matchesMask = None
 
-# Read the images to be aligned
-im1 =  cv2.imread("image1.png");
-im2 =  cv2.imread("image2.png");
+def main():
+	# Read the images to be aligned
+	im1 =  cv2.imread("image1.png");
+	im2 =  cv2.imread("image4.png");
 
-method2(im1,im2)
+	'''
+	trying method 1 now. Press any key to continue
+	'''
+	method1(im1,im2)
 
+ 	'''
+	trying method 2 now.
+	'''
+	method2(im1,im2)
+
+if __name__ == "__main__":
+	main()

@@ -116,7 +116,7 @@ def main():
 	im2 =  cv2.imread("image4.png");
 
 	'''
-	trying method 1 now. Press any key to continue
+	trying method 1 now (might take a bit of time to complete) Press any key to continue
 	'''
 	method1(im1,im2)
 
